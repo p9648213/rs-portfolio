@@ -2,7 +2,7 @@ use vy::prelude::*;
 
 pub fn render_project() -> impl IntoHtml {
     (
-        h2!(class = "text-xl font-bold", "Project"),
+        h2!(class = "text-xl font-bold", "🦀 Project"),
         div!(
             class = "flex gap-2",
             span!(
