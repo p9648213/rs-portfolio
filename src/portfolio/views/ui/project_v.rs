@@ -12,6 +12,7 @@ pub fn render_project() -> impl IntoHtml {
             ),
             a!(
                 class = "text-blue-400 underline",
+                target = "_blank",
                 href = "/realestate",
                 "Preview"
             ),
