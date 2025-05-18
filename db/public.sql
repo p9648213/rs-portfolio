@@ -1,6 +1,4 @@
--- CREATE DATABASE
-DROP DATABASE IF EXISTS "portfolio";
-CREATE DATABASE "portfolio";
+CREATE TYPE "RealEstateRole" AS ENUM ('Manager', 'Tenant');
 
 -- CREATE TABLE
 CREATE TABLE IF NOT EXISTS users (
@@ -11,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255),
     image_url VARCHAR(255),
     provider VARCHAR(20),
+    real_estate_role "RealEstateRole" NOT NULL DEFAULT 'Tenant',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

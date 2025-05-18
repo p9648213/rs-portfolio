@@ -64,7 +64,7 @@ pub fn render_footer() -> impl IntoHtml {
                 )
             ),
             div!(
-                class = "flex justify-center space-x-4 mt-8 text-gray-500 text-sm text-center",
+                class = "flex justify-center space-x-4 mt-5 text-gray-500 text-sm text-center",
                 span!("© RENTiful. All rights reserved"),
                 a!(href = "/privacy", "Privacy Policy"),
                 a!(href = "/terms", "Terms of Service"),

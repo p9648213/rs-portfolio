@@ -25,7 +25,7 @@ pub fn render_call_to_action() -> impl IntoHtml {
                     div!(
                         class = "flex flex-col gap-3 max-md:items-center",
                         p!(
-                            class = "text-white",
+                            class = "text-white text-lg",
                             "Discover a wide range of rental properties in your desired location."
                         ),
                         div!(
@@ -35,12 +35,6 @@ pub fn render_call_to_action() -> impl IntoHtml {
                                 class = "inline-block bg-white hover:bg-primary-500 px-6 py-3 rounded-lg font-semibold text-primary-700 hover:text-primary-50 cursor-pointer",
                                 "Search"
                             )
-                        ),
-                        a!(
-                            href = "/realestate/sign-up",
-                            "hx-swap" = "none",
-                            class = "inline-block bg-secondary-500 hover:bg-secondary-600 px-6 py-3 rounded-lg font-semibold text-white cursor-pointer w-fit",
-                            "Sign Up"
                         )
                     )
                 )

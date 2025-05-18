@@ -1,7 +1,7 @@
 use axum::{
     Form,
     extract::{Query, State},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode},
     response::{IntoResponse, Redirect, Response},
 };
 use axum_extra::extract::CookieJar;
@@ -15,7 +15,10 @@ use uuid::Uuid;
 
 use crate::common::{
     constant::{COOKIE_AUTH_CODE_VERIFIER, COOKIE_AUTH_CSRF_STATE},
-    models::{error::AppError, user_db::User},
+    models::{
+        error::AppError,
+        user_db::{RealEstateRole, User},
+    },
     utilities::{
         config::EnvConfig,
         hash::{compare_password, hash_password},
@@ -34,6 +37,7 @@ pub struct RegisterForm {
     pub username: String,
     pub email: String,
     pub password: String,
+    pub confirm_password: String,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -51,7 +55,9 @@ pub struct GoogleUser {
     picture: String,
 }
 
+#[axum::debug_handler]
 pub async fn login(
+    headers: HeaderMap,
     session: Session<SessionRedisPool>,
     State(pg_pool): State<Pool>,
     Form(login_form): Form<LoginForm>,
@@ -59,7 +65,13 @@ pub async fn login(
     let row = User::get_user_by_email(
         &login_form.email,
         &pg_pool,
-        vec!["id", "password", "username", "image_url"],
+        vec![
+            "id",
+            "password",
+            "username",
+            "image_url",
+            "real_estate_role",
+        ],
     )
     .await?;
 
@@ -80,20 +92,47 @@ pub async fn login(
 
         let user_image = user
             .image_url
-            .unwrap_or("/assets/images/default-user.webp".to_owned());
+            .unwrap_or("/assets/images/common/default-user.webp".to_owned());
+
+        let user_rs_role = user.real_estate_role.unwrap_or(RealEstateRole::Tenant);
 
         if compare_password(&login_form.password, &user_password)? {
             session.set("user-id", user_id);
             session.set("user-image", user_image);
             session.set("user-name", user_name);
+            session.set(
+                "user-rs-role",
+                match user_rs_role {
+                    RealEstateRole::Manager => "manager",
+                    RealEstateRole::Tenant => "tenant",
+                },
+            );
 
-            let response = Response::builder()
-                .status(StatusCode::OK)
-                .header("HX-Location", "/")
-                .body(axum::body::Body::empty())
-                .unwrap();
+            let referer = headers.get(reqwest::header::REFERER);
 
-            Ok(response)
+            if let Some(referer) = referer {
+                let referer = referer.to_str().unwrap_or("");
+                let location = reqwest::Url::parse(referer)
+                    .ok()
+                    .map(|url| url.path().to_string())
+                    .unwrap_or_else(|| "/".to_string());
+
+                let response = Response::builder()
+                    .status(StatusCode::OK)
+                    .header("HX-Location", location)
+                    .body(axum::body::Body::empty())
+                    .unwrap();
+
+                Ok(response)
+            } else {
+                let response = Response::builder()
+                    .status(StatusCode::OK)
+                    .header("HX-Location", "/")
+                    .body(axum::body::Body::empty())
+                    .unwrap();
+
+                Ok(response)
+            }
         } else {
             Err(AppError::new(
                 StatusCode::UNAUTHORIZED,
@@ -113,12 +152,20 @@ pub async fn register(
     Form(register_form): Form<RegisterForm>,
 ) -> impl IntoResponse {
     if register_form.email.is_empty()
-        || register_form.password.is_empty()
         || register_form.username.is_empty()
+        || register_form.password.is_empty()
+        || register_form.confirm_password.is_empty()
     {
         return Err(AppError::new(
             StatusCode::BAD_REQUEST,
             "Input can not be empty",
+        ));
+    }
+
+    if register_form.password != register_form.confirm_password {
+        return Err(AppError::new(
+            StatusCode::BAD_REQUEST,
+            "Passwords do not match",
         ));
     }
 
@@ -148,19 +195,44 @@ pub async fn register(
     )])
 }
 
-pub async fn logout(session: Session<SessionRedisPool>) -> Result<impl IntoResponse, AppError> {
+pub async fn logout(
+    headers: HeaderMap,
+    session: Session<SessionRedisPool>,
+) -> Result<impl IntoResponse, AppError> {
     session.destroy();
 
-    let response = Response::builder()
-        .status(StatusCode::OK)
-        .header("HX-Location", "/")
-        .body(axum::body::Body::empty())
-        .unwrap();
+    let referer = headers.get(reqwest::header::REFERER);
 
-    Ok(response)
+    if let Some(referer) = referer {
+        let referer = referer.to_str().unwrap_or("");
+        let location = reqwest::Url::parse(referer)
+            .ok()
+            .map(|url| url.path().to_string())
+            .unwrap_or_else(|| "/".to_string());
+
+        let response = Response::builder()
+            .status(StatusCode::OK)
+            .header("HX-Location", location)
+            .body(axum::body::Body::empty())
+            .unwrap();
+
+        Ok(response)
+    } else {
+        let response = Response::builder()
+            .status(StatusCode::OK)
+            .header("HX-Location", "/")
+            .body(axum::body::Body::empty())
+            .unwrap();
+
+        Ok(response)
+    }
 }
 
-pub async fn google_login(State(config): State<EnvConfig>) -> Result<impl IntoResponse, AppError> {
+pub async fn google_login(
+    headers: HeaderMap,
+    session: Session<SessionRedisPool>,
+    State(config): State<EnvConfig>,
+) -> Result<impl IntoResponse, AppError> {
     let client = create_google_client(&config)?;
 
     let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
@@ -197,6 +269,13 @@ pub async fn google_login(State(config): State<EnvConfig>) -> Result<impl IntoRe
 
     let cookies = CookieJar::new().add(crsf_cookie).add(code_verifier);
 
+    let referer = match headers.get(reqwest::header::REFERER) {
+        Some(referer) => referer.to_str().unwrap_or(&config.allow_origin),
+        None => &config.allow_origin,
+    };
+
+    session.set("user-last-url", referer);
+
     Ok((cookies, Redirect::to(authorize_url.as_str())))
 }
 
@@ -207,7 +286,6 @@ pub async fn google_callback(
     Query(query): Query<AuthRequest>,
     cookies: CookieJar,
 ) -> Result<impl IntoResponse, AppError> {
-    let client_url = &config.allow_origin;
     let code = query.code;
     let state = query.state;
     let stored_state = cookies.get(COOKIE_AUTH_CSRF_STATE);
@@ -282,9 +360,21 @@ pub async fn google_callback(
                 AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
             })?;
 
+            let user_rs_role = user.real_estate_role.ok_or_else(|| {
+                tracing::error!("No real_estate_role column or value is null");
+                AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
+            })?;
+
             session.set("user-id", user_id);
             session.set("user-name", user_name);
             session.set("user-image", user_image);
+            session.set(
+                "user-rs-role",
+                match user_rs_role {
+                    RealEstateRole::Manager => "manager",
+                    RealEstateRole::Tenant => "tenant",
+                },
+            );
         }
         None => {
             if let Some(email) = google_user.email {
@@ -318,6 +408,7 @@ pub async fn google_callback(
                         session.set("user-id", user_id);
                         session.set("user-name", &google_user.name);
                         session.set("user-image", &google_user.picture);
+                        session.set("user-rs-role", "tenant");
                     }
                     None => {
                         let uuid = Uuid::new_v4().to_string();
@@ -342,6 +433,7 @@ pub async fn google_callback(
                         session.set("user-id", uuid);
                         session.set("user-name", &google_user.name);
                         session.set("user-image", &google_user.picture);
+                        session.set("user-rs-role", "tenant");
                     }
                 }
             } else {
@@ -367,6 +459,7 @@ pub async fn google_callback(
                 session.set("user-id", uuid);
                 session.set("user-name", &google_user.name);
                 session.set("user-image", &google_user.picture);
+                session.set("user-rs-role", "tenant");
             }
         }
     };
@@ -382,6 +475,8 @@ pub async fn google_callback(
     let cookies = CookieJar::new()
         .add(remove_csrf_cookie)
         .add(remove_code_verifier);
+
+    let client_url: String = session.get("user-last-url").unwrap_or(config.allow_origin);
 
     let response = (cookies, Redirect::to(client_url.as_str())).into_response();
 

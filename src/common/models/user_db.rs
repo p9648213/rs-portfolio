@@ -2,7 +2,14 @@ use crate::common::utilities::db::{excute, query_optional};
 
 use super::error::AppError;
 use deadpool_postgres::Pool;
+use postgres_types::{FromSql, ToSql};
 use tokio_postgres::Row;
+
+#[derive(Debug, ToSql, FromSql, Clone)]
+pub enum RealEstateRole {
+    Manager,
+    Tenant,
+}
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -13,6 +20,7 @@ pub struct User {
     pub password: Option<String>,
     pub image_url: Option<String>,
     pub provider: Option<String>,
+    pub real_estate_role: Option<RealEstateRole>,
 }
 
 impl User {
@@ -40,6 +48,9 @@ impl User {
         let provider: Option<String> = row
             .try_get(format!("{}provider", prefix).as_str())
             .unwrap_or(None);
+        let real_estate_role: Option<RealEstateRole> = row
+            .try_get(format!("{}real_estate_role", prefix).as_str())
+            .unwrap_or(None);
 
         Self {
             id,
@@ -49,6 +60,7 @@ impl User {
             password,
             image_url,
             provider,
+            real_estate_role,
         }
     }
 

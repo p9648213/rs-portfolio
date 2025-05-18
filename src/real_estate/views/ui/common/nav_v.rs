@@ -1,6 +1,16 @@
 use vy::prelude::*;
 
-pub fn render_navbar() -> impl IntoHtml {
+use crate::common::{
+    middlewares::auth_mw::UserAuth,
+    views::ui::auth_modal_v::{render_login_modal, render_register_modal},
+};
+
+pub struct NavBarProps<'a> {
+    pub user_auth: &'a UserAuth,
+    pub is_dashboard_page: bool,
+}
+
+pub fn render_navbar(props: NavBarProps) -> impl IntoHtml {
     div!(
         class = "fixed top-0 left-0 w-full z-50 shadow-xl h-[52px]",
         div!(
@@ -9,7 +19,7 @@ pub fn render_navbar() -> impl IntoHtml {
                 class = "flex items-center gap-4 md:gap-6",
                 a!(
                     href = "/realestate",
-                    class = "cursor-pointer hover:!text-primary-300",
+                    class = "cursor-pointer hover:text-primary-300",
                     div!(
                         class = "flex items-center gap-3",
                         img!(
@@ -21,7 +31,7 @@ pub fn render_navbar() -> impl IntoHtml {
                             class = "text-xl font-bold",
                             "RENT",
                             span!(
-                                class = "text-secondary-500 font-light hover:!text-primary-300",
+                                class = "text-secondary-500 font-light hover:text-primary-300",
                                 "IFUL"
                             )
                         )
@@ -32,19 +42,84 @@ pub fn render_navbar() -> impl IntoHtml {
                 class = "text-primary-200 hidden md:block",
                 "Discover your perfect rental apartment with out advance search"
             ),
-            div!(
-                class = "flex items-center gap-5",
-                a!(
-                    href = "/signin",
-                    class = "text-white border-white bg-transparent hover:bg-white hover:text-primary-700 rounded-lg cursor-pointer py-1.5 px-3 border",
-                    "Sign In"
-                ),
-                a!(
-                    href = "/signup",
-                    class = "bg-secondary-600 hover:bg-white  hover:text-primary-700 rounded-lg cursor-pointer py-1.5 px-3 border",
-                    "Sign Up"
+            if let Some(user) = &props.user_auth.0 {
+                (
+                    PreEscaped(
+                        r#"
+                            <script defer type="module">
+                                import { setupUserDropdown } from "/assets/js/realestate/home/user-dropdown.js"
+                                setupUserDropdown()
+                            </script>
+                        "#,
+                    ),
+                    div!(
+                        id = "user-dropdown",
+                        class = "flex items-center gap-2 cursor-pointer relative",
+                        img!(
+                            class = "rounded-full h-7 w-7",
+                            src = &user.image_url,
+                            alt = "avatar"
+                        ),
+                        span!(&user.username),
+                        span!(PreEscaped("&#11167;")),
+                        div!(
+                            id = "user-dropdown-options",
+                            class = "hidden w-max top-9 right-0 text-black absolute flex-col gap-1 bg-white px-3 py-2 border border-neutral-600 rounded-md",
+                            div!(
+                                class = "flex flex-col bg-white text-primary-700",
+                                a!(
+                                    class = "hover:bg-primary-700 hover:text-primary-100 py-1 px-2 rounded-md w-full",
+                                    name = "dropdown-item",
+                                    href = if user.rs_role == "manager" {
+                                        "/manager/properties"
+                                    } else {
+                                        "/tenant/favorites"
+                                    },
+                                    "Go to dashboard"
+                                ),
+                                a!(
+                                    class = "hover:bg-primary-700 hover:text-primary-100 py-1 px-2 rounded-md w-full",
+                                    name = "dropdown-item",
+                                    href = format!("/{}/settings", user.rs_role),
+                                    "Setting"
+                                ),
+                                form!(
+                                    class = "w-full",
+                                    name = "dropdown-item",
+                                    "hx-post" = "/auth/logout",
+                                    "hx-swap" = "none",
+                                    button!(
+                                        class = "text-start hover:bg-primary-700 hover:text-primary-100 py-1 px-2 rounded-md w-full",
+                                        "type" = "submit",
+                                        "Sign out"
+                                    )
+                                )
+                            ),
+                        ),
+                    ),
                 )
-            )
+            } else {
+                (
+                    PreEscaped(
+                        r#"
+                            <script defer type="module">
+                                import { setupAuthModal} from "/assets/js/realestate/home/auth-modal.js"
+                                setupAuthModal()
+                            </script>
+                        "#,
+                    ),
+                    div!(
+                        class = "flex items-center gap-5",
+                        button!(
+                            id = "sign-in-button",
+                            class = "text-white border-white bg-transparent hover:bg-white hover:text-primary-700 rounded-lg cursor-pointer py-1.5 px-3 border",
+                            "Sign In"
+                        ),
+                        render_login_modal(),
+                        render_register_modal(),
+                    ),
+                )
+            }
         )
     )
 }

@@ -1,4 +1,4 @@
-use axum::{Extension, http::HeaderMap, response::Html};
+use axum::{Extension, extract::Request, response::Html};
 use vy::IntoHtml;
 
 use crate::{
@@ -8,8 +8,16 @@ use crate::{
 
 pub async fn get_home_page(
     Extension(user_auth): Extension<UserAuth>,
-    _headers: HeaderMap,
+    request: Request,
 ) -> Html<String> {
-    let props = HomePageProps { user_auth };
+    let pathname = request.uri().path();
+
+    let is_dashboard_page = pathname.contains("/managers") || pathname.contains("/tenants");
+
+    let props = HomePageProps {
+        user_auth,
+        is_dashboard_page,
+    };
+
     Html(render_home_page(&props).into_string())
 }

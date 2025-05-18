@@ -9,6 +9,7 @@ pub struct UserInfo {
     pub id: String,
     pub username: String,
     pub image_url: String,
+    pub rs_role: String,
 }
 
 #[derive(Clone, Debug)]
@@ -24,11 +25,13 @@ pub async fn auth_middleware(
     if let Some(id) = user_id {
         let username: Option<String> = session.get("user-name");
         let image_url: Option<String> = session.get("user-image");
+        let rs_role: Option<String> = session.get("user-rs-role");
 
         let user_info = UserInfo {
             id,
             username: username.unwrap_or_default(),
             image_url: image_url.unwrap_or_default(),
+            rs_role: rs_role.unwrap_or_default(),
         };
 
         request.extensions_mut().insert(UserAuth(Some(user_info)));

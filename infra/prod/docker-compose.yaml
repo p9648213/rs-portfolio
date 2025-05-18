@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres
+    image: postgis/postgis
     environment:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
