@@ -1,5 +1,11 @@
 use super::views::pages::home_v::DiscoverItem;
 
+pub struct UserNavItem<'a> {
+    pub img: &'a str,
+    pub label: &'a str,
+    pub href: &'a str,
+}
+
 pub const FEATURES_TITLES: [&str; 3] = [
     "Trustworthy and Verified Listings",
     "Browse Rental Listings With Ease",
@@ -37,5 +43,46 @@ pub const DISCOVER_ITEMS: [DiscoverItem; 3] = [
         image_src: "/assets/images/real-estate/landing-icon-heart.png",
         title: "Enjoy your New Home",
         description: "Move into your new rental property and start enjoying your dream home.",
+    },
+];
+
+pub const MANAGER_NAV: [UserNavItem; 3] = [
+    UserNavItem {
+        img: "/assets/images/real-estate/building.svg",
+        label: "Properties",
+        href: "realestate/manager/property",
+    },
+    UserNavItem {
+        img: "/assets/images/real-estate/file-text.svg",
+        label: "Applications",
+        href: "/realestate/manager/applications",
+    },
+    UserNavItem {
+        img: "/assets/images/real-estate/settings.svg",
+        label: "Settings",
+        href: "/realestate/manager/settings",
+    },
+];
+
+pub const TENANT_NAV: [UserNavItem; 4] = [
+    UserNavItem {
+        img: "/assets/images/real-estate/heart.svg",
+        label: "Favorites",
+        href: "/realestate/tenant/favorites",
+    },
+    UserNavItem {
+        img: "/assets/images/real-estate/file-text.svg",
+        label: "Applications",
+        href: "/realestate/tenant/applications",
+    },
+    UserNavItem {
+        img: "/assets/images/real-estate/house.svg",
+        label: "Residences",
+        href: "/realestate/tenant/residences",
+    },
+    UserNavItem {
+        img: "/assets/images/real-estate/settings.svg",
+        label: "Settings",
+        href: "/realestate/tenant/settings",
     },
 ];

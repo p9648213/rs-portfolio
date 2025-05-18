@@ -1,7 +1,7 @@
 use vy::prelude::*;
 
 use crate::{
-    common::{middlewares::auth_mw::UserAuth, views::head_v::render_head},
+    common::{middlewares::auth_mw::UserInfo, views::head_v::render_head},
     real_estate::views::ui::{
         common::{
             footer_v::render_footer,
@@ -15,7 +15,7 @@ use crate::{
 };
 
 pub struct HomePageProps {
-    pub user_auth: UserAuth,
+    pub user_info: Option<UserInfo>,
     pub is_dashboard_page: bool,
 }
 
@@ -27,7 +27,7 @@ pub struct DiscoverItem<'a> {
 
 pub fn render_home_page(props: &HomePageProps) -> impl IntoHtml {
     let nav_props = NavBarProps {
-        user_auth: &props.user_auth,
+        user_info: props.user_info.as_ref(),
         is_dashboard_page: props.is_dashboard_page,
     };
 
@@ -38,6 +38,7 @@ pub fn render_home_page(props: &HomePageProps) -> impl IntoHtml {
             render_head(),
             title!("Home - Rentiful"),
             body!(
+                class = "text-sm",
                 "hx-boost" = true,
                 render_navbar(nav_props),
                 main!(render_home_section()),

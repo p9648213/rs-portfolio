@@ -2,9 +2,9 @@ use vy::prelude::*;
 
 pub fn render_footer() -> impl IntoHtml {
     footer!(
-        class = "py-20 border-gray-200 border-t",
+        class = "py-10 border-gray-200 border-t",
         div!(
-            class = "flex flex-col items-center mx-auto px-6 sm:px-8 max-w-4l",
+            class = "flex flex-col items-center mx-auto px-6 sm:px-8 max-w-4xl",
             div!(
                 class = "mb-4",
                 a!(
@@ -29,7 +29,7 @@ pub fn render_footer() -> impl IntoHtml {
                 a!(
                     href = "#facebook",
                     "aria-label" = "Facebook",
-                    class = "w-6 h-6 hover:text-primary-600",
+                    class = "w-6 h-6",
                     img!(
                         src = "/assets/images/real-estate/facebook.svg",
                         class = "w-full h-full"
@@ -38,7 +38,7 @@ pub fn render_footer() -> impl IntoHtml {
                 a!(
                     href = "#instagram",
                     "aria-label" = "Instagram",
-                    class = "w-6 h-6 hover:text-primary-600",
+                    class = "w-6 h-6",
                     img!(
                         src = "/assets/images/real-estate/instagram.svg",
                         class = "w-full h-full"
@@ -47,7 +47,7 @@ pub fn render_footer() -> impl IntoHtml {
                 a!(
                     href = "#linkedin",
                     "aria-label" = "Linkedin",
-                    class = "w-6 h-6 hover:text-primary-600",
+                    class = "w-6 h-6",
                     img!(
                         src = "/assets/images/real-estate/linkedin.svg",
                         class = "w-full h-full"
@@ -56,7 +56,7 @@ pub fn render_footer() -> impl IntoHtml {
                 a!(
                     href = "#youtube",
                     "aria-label" = "Youtube",
-                    class = "w-6 h-6 hover:text-primary-600",
+                    class = "w-6 h-6",
                     img!(
                         src = "/assets/images/real-estate/youtube.svg",
                         class = "w-full h-full"

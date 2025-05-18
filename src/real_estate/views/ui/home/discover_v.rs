@@ -32,9 +32,9 @@ pub fn render_home_discover() -> impl IntoHtml {
 
 pub fn render_discover_card(item: DiscoverItem) -> impl IntoHtml {
     div!(
-        class = "bg-primary-50 shadow-lg px-4 py-12 rounded-lg md:h-72",
+        class = "bg-zinc-50 shadow-lg px-4 py-12 rounded-lg md:h-72",
         div!(
-            class = "bg-primary-700 mx-auto mb-4 p-[0.6rem] rounded-full w-10 h-10",
+            class = "bg-zinc-700 mx-auto mb-4 p-[0.6rem] rounded-full w-10 h-10",
             img!(
                 src = item.image_src,
                 alt = item.title,

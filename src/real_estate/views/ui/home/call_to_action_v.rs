@@ -32,7 +32,7 @@ pub fn render_call_to_action() -> impl IntoHtml {
                             class = "flex justify-center md:justify-start gap-4",
                             button!(
                                 onclick = "window.scrollTo({top: 0, behavior: 'smooth'})",
-                                class = "inline-block bg-white hover:bg-primary-500 px-6 py-3 rounded-lg font-semibold text-primary-700 hover:text-primary-50 cursor-pointer",
+                                class = "inline-block bg-white hover:bg-zinc-500 px-6 py-3 rounded-lg font-semibold text-zinc-700 hover:text-zinc-50 cursor-pointer",
                                 "Search"
                             )
                         )

@@ -31,7 +31,7 @@ pub fn render_home_hero() -> impl IntoHtml {
                             class = "w-full max-w-lg rounded-none rounded-l-xl border-none bg-white h-12"
                         ),
                         button!(
-                            class = "bg-secondary-500 text-white rounded-none rounded-r-xl border-none hover:bg-secondary-600 h-12 px-4",
+                            class = "bg-red-400 text-white rounded-none rounded-r-xl border-none hover:bg-red-500 h-12 px-4",
                             "Search"
                         )
                     )
