@@ -14,15 +14,15 @@ pub enum TenantSlug {
     Settings,
 }
 
-pub struct TenantPageProps {
-    pub user_info: UserInfo,
+pub struct TenantPageProps<'a> {
+    pub user_info: &'a UserInfo,
     pub is_dashboard_page: bool,
     pub slug: TenantSlug,
 }
 
 pub fn render_tenant_page(props: &TenantPageProps) -> impl IntoHtml {
     let nav_props = NavBarProps {
-        user_info: Some(&props.user_info),
+        user_info: Some(props.user_info),
         is_dashboard_page: props.is_dashboard_page,
     };
 
@@ -51,6 +51,14 @@ pub fn render_tenant_section(slug: &TenantSlug, role: &str) -> impl IntoHtml {
     div!(
         class = "h-screen pt-[52px] flex",
         render_sidebar(role),
+        render_tentant_content(slug)
+    )
+}
+
+pub fn render_tentant_content(slug: &TenantSlug) -> impl IntoHtml {
+    div!(
+        class = "bg-zinc-100 flex-1",
+        id = "tenant-content",
         if *slug == TenantSlug::Favorites {
             render_tenant_favorites()
         } else {
@@ -60,7 +68,7 @@ pub fn render_tenant_section(slug: &TenantSlug, role: &str) -> impl IntoHtml {
 }
 
 pub fn render_tenant_favorites() -> impl IntoHtml {
-    div!(class = "bg-zinc-100 w-full", "Favorites")
+    div!("Favorites")
 }
 
 pub fn render_tenant_settings() -> impl IntoHtml {

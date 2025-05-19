@@ -51,6 +51,7 @@ fn render_nav_item(item: UserNavItem<'static>, active_item: &str) -> impl IntoHt
         a!(
             class = "flex gap-3 items-center px-3 py-2 bg-zinc-100 rounded-md",
             href = item.href,
+            "hx-target" = "#tenant-content",
             div!(
                 class = "h-4 w-4",
                 img!(class = "w-full h-full", src = item.img, alt = "arrow-back")
@@ -61,6 +62,7 @@ fn render_nav_item(item: UserNavItem<'static>, active_item: &str) -> impl IntoHt
         a!(
             class = "flex gap-3 items-center px-3 py-2 hover:bg-zinc-100 hover:rounded-md",
             href = item.href,
+            "hx-target" = "#tenant-content",
             div!(
                 class = "h-4 w-4",
                 img!(class = "w-full h-full", src = item.img, alt = "arrow-back")

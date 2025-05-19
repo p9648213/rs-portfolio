@@ -21,6 +21,7 @@ pub struct User {
     pub image_url: Option<String>,
     pub provider: Option<String>,
     pub real_estate_role: Option<RealEstateRole>,
+    pub phone_number: Option<String>,
 }
 
 impl User {
@@ -51,6 +52,9 @@ impl User {
         let real_estate_role: Option<RealEstateRole> = row
             .try_get(format!("{}real_estate_role", prefix).as_str())
             .unwrap_or(None);
+        let phone_number: Option<String> = row
+            .try_get(format!("{}phone_number", prefix).as_str())
+            .unwrap_or(None);
 
         Self {
             id,
@@ -61,6 +65,7 @@ impl User {
             image_url,
             provider,
             real_estate_role,
+            phone_number,
         }
     }
 
