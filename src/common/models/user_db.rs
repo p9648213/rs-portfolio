@@ -70,7 +70,7 @@ impl User {
     }
 
     pub async fn get_user_by_id(
-        id: i32,
+        id: &str,
         pool: &Pool,
         columns: Vec<&str>,
     ) -> Result<Option<Row>, AppError> {
@@ -158,5 +158,19 @@ impl User {
 			pool,
 		)
 		.await
+    }
+
+    pub async fn update_realestate_user(
+        id: &str,
+        username: &str,
+        phone_number: &str,
+        pool: &Pool,
+    ) -> Result<u64, AppError> {
+        excute(
+            "UPDATE users SET username = $1, phone_number = $2 WHERE id = $3",
+            &[&username, &phone_number, &id],
+            pool,
+        )
+        .await
     }
 }

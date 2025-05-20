@@ -4,7 +4,7 @@ use crate::{
     common::{middlewares::auth_mw::UserInfo, views::head_v::render_head},
     real_estate::views::ui::{
         common::nav_v::{NavBarProps, render_navbar},
-        tenant::sidebar_v::render_sidebar,
+        tenant::sidebar_v::render_tenant_sidebar,
     },
 };
 
@@ -31,39 +31,31 @@ pub fn render_tenant_page(props: &TenantPageProps) -> impl IntoHtml {
         html!(
             lang = "en",
             render_head(),
-            link!(
-                rel = "stylesheet",
-                href = "/assets/css/realestate/tenant/sidebar.css"
-            ),
             title!("Tenant - Rentiful"),
             body!(
                 class = "text-sm",
                 "hx-boost" = true,
                 render_navbar(nav_props),
-                main!(render_tenant_section(&props.slug, &props.user_info.rs_role))
+                main!(render_tenant_section(&props.slug))
             ),
             div!(id = "toast")
         ),
     )
 }
 
-pub fn render_tenant_section(slug: &TenantSlug, role: &str) -> impl IntoHtml {
+pub fn render_tenant_section(slug: &TenantSlug) -> impl IntoHtml {
     div!(
         class = "h-screen pt-[52px] flex",
-        render_sidebar(role),
-        render_tentant_content(slug)
-    )
-}
-
-pub fn render_tentant_content(slug: &TenantSlug) -> impl IntoHtml {
-    div!(
-        class = "bg-zinc-100 flex-1",
-        id = "tenant-content",
-        if *slug == TenantSlug::Favorites {
-            render_tenant_favorites()
-        } else {
-            render_tenant_settings()
-        }
+        id = "tenant-section",
+        render_tenant_sidebar(slug),
+        div!(
+            class = "bg-zinc-100 flex-1",
+            if *slug == TenantSlug::Favorites {
+                render_tenant_favorites()
+            } else {
+                render_tenant_settings()
+            }
+        )
     )
 }
 
@@ -72,5 +64,8 @@ pub fn render_tenant_favorites() -> impl IntoHtml {
 }
 
 pub fn render_tenant_settings() -> impl IntoHtml {
-    div!("Settings")
+    div!(
+        "hx-get" = "/realestate/ui/tenant/settings-form",
+        "hx-trigger" = "load",
+    )
 }

@@ -1,8 +1,16 @@
 use vy::prelude::*;
 
-use crate::real_estate::constant::{MANAGER_NAV, TENANT_NAV, UserNavItem};
+use crate::real_estate::{
+    constant::{TENANT_NAV, UserNavItem},
+    views::pages::tenant_v::TenantSlug,
+};
 
-pub fn render_sidebar(role: &str) -> impl IntoHtml {
+pub fn render_tenant_sidebar(slug: &TenantSlug) -> impl IntoHtml {
+    let active_item = match slug {
+        TenantSlug::Favorites => "Favorites",
+        TenantSlug::Settings => "Settings",
+    };
+
     (
         PreEscaped(
             r#"
@@ -11,6 +19,10 @@ pub fn render_sidebar(role: &str) -> impl IntoHtml {
                     setupTenantSidebar()
                 </script>
             "#,
+        ),
+        link!(
+            rel = "stylesheet",
+            href = "/assets/css/realestate/tenant/sidebar.css"
         ),
         div!(
             id = "tenant-sidebar",
@@ -36,22 +48,19 @@ pub fn render_sidebar(role: &str) -> impl IntoHtml {
             ),
             ul!(
                 class = "flex flex-col gap-2 mt-6",
-                if role == "manager" {
-                    MANAGER_NAV.map(|item| render_nav_item(item, "Properties"))
-                } else {
-                    TENANT_NAV.map(|item| render_nav_item(item, "Favorites"))
-                }
+                TENANT_NAV.map(|item| render_nav_item(item, active_item))
             )
         ),
     )
 }
 
-fn render_nav_item(item: UserNavItem<'static>, active_item: &str) -> impl IntoHtml {
+pub fn render_nav_item(item: UserNavItem<'static>, active_item: &str) -> impl IntoHtml {
     li!(if item.label == active_item {
         a!(
             class = "flex gap-3 items-center px-3 py-2 bg-zinc-100 rounded-md",
             href = item.href,
-            "hx-target" = "#tenant-content",
+            "hx-target" = "#tenant-section",
+            "hx-swap" = "outerHTML",
             div!(
                 class = "h-4 w-4",
                 img!(class = "w-full h-full", src = item.img, alt = "arrow-back")
@@ -62,7 +71,8 @@ fn render_nav_item(item: UserNavItem<'static>, active_item: &str) -> impl IntoHt
         a!(
             class = "flex gap-3 items-center px-3 py-2 hover:bg-zinc-100 hover:rounded-md",
             href = item.href,
-            "hx-target" = "#tenant-content",
+            "hx-target" = "#tenant-section",
+            "hx-swap" = "outerHTML",
             div!(
                 class = "h-4 w-4",
                 img!(class = "w-full h-full", src = item.img, alt = "arrow-back")
