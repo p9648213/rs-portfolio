@@ -58,7 +58,7 @@ pub fn render_navbar(props: NavBarProps) -> impl IntoHtml {
                             src = &user.image_url,
                             alt = "avatar"
                         ),
-                        span!(&user.username),
+                        span!(id = "user-username", &user.username),
                         span!(PreEscaped("&#11167;")),
                         div!(
                             id = "user-dropdown-options",

@@ -46,7 +46,7 @@ pub const DISCOVER_ITEMS: [DiscoverItem; 3] = [
     },
 ];
 
-pub const MANAGER_NAV: [UserNavItem; 3] = [
+pub const MANAGER_NAV: [UserNavItem; 2] = [
     UserNavItem {
         img: "/assets/images/real-estate/building.svg",
         label: "Properties",
@@ -56,11 +56,6 @@ pub const MANAGER_NAV: [UserNavItem; 3] = [
         img: "/assets/images/real-estate/file-text.svg",
         label: "Applications",
         href: "/realestate/manager/applications",
-    },
-    UserNavItem {
-        img: "/assets/images/real-estate/settings.svg",
-        label: "Settings",
-        href: "/realestate/manager/settings",
     },
 ];
 

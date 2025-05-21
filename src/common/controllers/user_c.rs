@@ -45,11 +45,14 @@ pub async fn update_user(
         session.set("user-name", &update_form.username);
     }
 
-    Ok([
-        (
-            "HX-Trigger",
-            r#"{"toastmessage":{"type":"success","message":"User update successfully"}}"#,
+    Ok([(
+        "HX-Trigger",
+        format!(
+            "{{\
+                \"toastmessage\":{{\"type\":\"success\",\"message\":\"User update successfully\"}},\
+                \"update_user\":{{\"type\":\"success\",\"username\":\"{}\"}}\
+            }}",
+            update_form.username
         ),
-        ("HX-Redirect", "/realestate/tenant/settings"),
-    ])
+    )])
 }

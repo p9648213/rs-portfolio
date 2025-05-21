@@ -67,6 +67,14 @@ window.addEventListener("toastmessage", function (event) {
   }
 });
 
+window.addEventListener("update_user", function (event) {
+  if (event?.detail?.type === "success") {
+    document.getElementById("user-username").textContent = escapeHtmlText(
+      event?.detail?.username
+    );
+  }
+});
+
 htmx.config.defaultSettleDelay = 0;
 htmx.config.getCacheBusterParam = true;
 htmx.config.selfRequestsOnly = true;
