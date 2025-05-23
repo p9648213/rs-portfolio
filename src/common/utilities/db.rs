@@ -14,7 +14,7 @@ pub async fn query(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let stmt = client.prepare(query).await.map_err(|error| {
+    let stmt = client.prepare_cached(query).await.map_err(|error| {
         tracing::error!("Couldn't prepare statement: {:?}", error);
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
@@ -37,7 +37,7 @@ pub async fn query_optional(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let stmt = client.prepare(query).await.map_err(|error| {
+    let stmt = client.prepare_cached(query).await.map_err(|error| {
         tracing::error!("Couldn't prepare statement: {:?}", error);
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
@@ -60,7 +60,7 @@ pub async fn query_one(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let stmt = client.prepare(query).await.map_err(|error| {
+    let stmt = client.prepare_cached(query).await.map_err(|error| {
         tracing::error!("Couldn't prepare statement: {:?}", error);
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
@@ -83,7 +83,7 @@ pub async fn excute(
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
 
-    let stmt = client.prepare(query).await.map_err(|error| {
+    let stmt = client.prepare_cached(query).await.map_err(|error| {
         tracing::error!("Couldn't prepare statement: {:?}", error);
         AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "Server error")
     })?;
