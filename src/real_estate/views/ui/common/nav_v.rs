@@ -50,6 +50,40 @@ pub fn render_navbar(props: NavBarProps) -> impl IntoHtml {
                             </script>
                         "#,
                     ),
+                    match props.is_dashboard_page {
+                        true => {
+                            if user.rs_role == "manager" {
+                                a!(
+                                    href = "/realestate/managers/newproperty",
+                                    class = "bg-zinc-50 text-zinc-700 px-3 py-2 rounded-md hover:opacity-80",
+                                    div!(
+                                        class = "flex gap-2 items-center",
+                                        img!(
+                                            class = "w-4 h-4",
+                                            src = "/assets/images/real-estate/plus.svg",
+                                            alt = "plus"
+                                        ),
+                                        span!("Add New Property")
+                                    )
+                                )
+                            } else {
+                                a!(
+                                    href = "/realestate/search",
+                                    class = "bg-zinc-50  text-zinc-700  px-3 py-2 rounded-md hover:opacity-80",
+                                    div!(
+                                        class = "flex gap-2 items-center",
+                                        img!(
+                                            class = "w-4 h-4",
+                                            src = "/assets/images/real-estate/search.svg",
+                                            alt = "search"
+                                        ),
+                                        span!("Search Properties")
+                                    )
+                                )
+                            }
+                        }
+                        false => PreEscaped(""),
+                    },
                     div!(
                         id = "user-dropdown",
                         class = "flex items-center gap-2 cursor-pointer relative",

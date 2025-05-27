@@ -6,6 +6,12 @@ pub struct UserNavItem<'a> {
     pub href: &'a str,
 }
 
+pub struct FilterItem<'a> {
+    pub title: &'a str,
+    pub img: &'a str,
+    pub alt: &'a str,
+}
+
 pub const FEATURES_TITLES: [&str; 3] = [
     "Trustworthy and Verified Listings",
     "Browse Rental Listings With Ease",
@@ -79,5 +85,106 @@ pub const TENANT_NAV: [UserNavItem; 4] = [
         img: "/assets/images/real-estate/settings.svg",
         label: "Settings",
         href: "/realestate/tenant/settings",
+    },
+];
+
+pub const PROPERTY_TYPE: [FilterItem; 6] = [
+    FilterItem {
+        title: "Rooms",
+        img: "/assets/images/real-estate/house.svg",
+        alt: "rooms",
+    },
+    FilterItem {
+        title: "Tinyhouse",
+        img: "/assets/images/real-estate/warehouse.svg",
+        alt: "tinyhouse",
+    },
+    FilterItem {
+        title: "Apartment",
+        img: "/assets/images/real-estate/building.svg",
+        alt: "apartment",
+    },
+    FilterItem {
+        title: "Villa",
+        img: "/assets/images/real-estate/castle.svg",
+        alt: "villa",
+    },
+    FilterItem {
+        title: "Townhouse",
+        img: "/assets/images/real-estate/house.svg",
+        alt: "townhouse",
+    },
+    FilterItem {
+        title: "Cottage",
+        img: "/assets/images/real-estate/trees.svg",
+        alt: "cottage",
+    },
+];
+
+pub const AMENITY: [FilterItem; 13] = [
+    FilterItem {
+        title: "Washer Dryer",
+        img: "/assets/images/real-estate/waves.svg",
+        alt: "washer dryer",
+    },
+    FilterItem {
+        title: "Air Conditioning",
+        img: "/assets/images/real-estate/thermometer.svg",
+        alt: "air conditioning",
+    },
+    FilterItem {
+        title: "Dish Washer",
+        img: "/assets/images/real-estate/waves.svg",
+        alt: "dish washer",
+    },
+    FilterItem {
+        title: "High Speed Internet",
+        img: "/assets/images/real-estate/wifi.svg",
+        alt: "high speed internet",
+    },
+    FilterItem {
+        title: "Hardwood Floors",
+        img: "/assets/images/real-estate/house.svg",
+        alt: "hardwood floors",
+    },
+    FilterItem {
+        title: "Walk In Closets",
+        img: "/assets/images/real-estate/maximize.svg",
+        alt: "walk in closets",
+    },
+    FilterItem {
+        title: "Microwave",
+        img: "/assets/images/real-estate/tv.svg",
+        alt: "microwave",
+    },
+    FilterItem {
+        title: "Refrigerator",
+        img: "/assets/images/real-estate/thermometer.svg",
+        alt: "refrigerator",
+    },
+    FilterItem {
+        title: "Pool",
+        img: "/assets/images/real-estate/waves.svg",
+        alt: "pool",
+    },
+    FilterItem {
+        title: "Gym",
+        img: "/assets/images/real-estate/dumbbell.svg",
+        alt: "gym",
+    },
+    FilterItem {
+        title: "Parking",
+        img: "/assets/images/real-estate/car.svg",
+        alt: "parking",
+    },
+    FilterItem {
+        title: "Pets Allowed",
+        img: "/assets/images/real-estate/paw-print.svg",
+        alt: "pets allowed",
+    },
+    FilterItem {
+        title: "WiFi",
+        img: "/assets/images/real-estate/wifi.svg",
+        alt: "wifi",
     },
 ];
