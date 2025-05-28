@@ -33,3 +33,22 @@ export function setupSquareFeet() {
     max_square_value.textContent = e.target.value + " sq ft";
   });
 }
+
+function getFilterFullPropertyType() {
+  const selected_property = document.getElementById("selected_property");
+
+  return selected_property
+    ? selected_property.querySelector("span").textContent.toLowerCase()
+    : "";
+}
+
+function getFilterFullAmenity() {
+  const selected_amenity = document.getElementById("selected_amenity");
+
+  return selected_amenity
+    ? selected_amenity.querySelector("span").textContent.toLowerCase()
+    : "";
+}
+
+window.getFilterFullPropertyType = getFilterFullPropertyType;
+window.getFilterFullAmenity = getFilterFullAmenity;

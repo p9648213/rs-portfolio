@@ -14,7 +14,17 @@ pub fn render_filter_full() -> impl IntoHtml {
             "#,
         ),
         link!(rel = "stylesheet", href = "/assets/css/lib/dual-range.css"),
-        div!(
+        form!(
+            "hx-get" = "/realestate/search",
+            "hx-swap" = "none",
+            "hx-trigger" = "submit",
+            "hx-push-url" = "true",
+            "hx-vals" = r#"
+                js:{
+                    property_type: getFilterFullPropertyType(),
+                    amenity: getFilterFullAmenity()
+                }
+            "#,
             class = "bg-white px-4 pb-10 rounded-md h-full overflow-auto",
             div!(
                 class = "flex flex-col space-y-6",
@@ -24,17 +34,10 @@ pub fn render_filter_full() -> impl IntoHtml {
                     div!(
                         class = "flex items-center",
                         input!(
-                            class = "border-zinc-400 rounded-r-none rounded-l-md h-8.5 px-2 w-full",
+                            name = "location",
+                            class = "border-zinc-400  rounded-md h-8.5 px-2 w-full",
                             placeholder = "Search Location"
                         ),
-                        button!(
-                            class = "border border-zinc-400 border-l-0 rounded-r-md rounded-l-none h-8.5 px-2",
-                            img!(
-                                class = "w-4 h-4",
-                                src = "/assets/images/real-estate/search.svg",
-                                alt = "search-location"
-                            ),
-                        )
                     ),
                 ),
                 // Property Type
@@ -48,20 +51,22 @@ pub fn render_filter_full() -> impl IntoHtml {
                     div!(
                         class = "dual-range-input",
                         input!(
+                            id = "min_price",
+                            name = "min_price",
                             "type" = "range",
                             min = "0",
                             max = "10000",
                             step = "100",
-                            value = "0",
-                            id = "min_price"
+                            value = "0"
                         ),
                         input!(
+                            id = "max_price",
+                            name = "max_price",
                             "type" = "range",
                             min = "0",
                             max = "10000",
                             step = "100",
-                            value = "10000",
-                            id = "max_price"
+                            value = "10000"
                         )
                     ),
                     div!(
@@ -107,20 +112,22 @@ pub fn render_filter_full() -> impl IntoHtml {
                     div!(
                         class = "dual-range-input",
                         input!(
+                            name = "min_square",
+                            id = "min_square",
                             "type" = "range",
                             min = "0",
                             max = "5000",
                             step = "100",
                             value = "0",
-                            id = "min_square"
                         ),
                         input!(
+                            name = "max_square",
+                            id = "max_square",
                             "type" = "range",
                             min = "0",
                             max = "5000",
                             step = "100",
                             value = "5000",
-                            id = "max_square"
                         )
                     ),
                     div!(
@@ -136,21 +143,25 @@ pub fn render_filter_full() -> impl IntoHtml {
                 ),
                 // Available From
                 div!(
-                    h4!(class="mb-2 font-bold", "Available From"),
+                    h4!(class = "mb-2 font-bold", "Available From"),
                     input!(
+                        name = "available_date",
+                        "type" = "date",
                         class = "rounded-md w-full",
-                        "type" = "date"
                     )
                 ),
                 // Apply and Reset buttons
                 div!(
-                    class="flex gap-4 mt-6",
+                    class = "flex gap-4 mt-6",
                     button!(
-                        class="flex-1 bg-zinc-700 hover:opacity-80 px-3 rounded-md h-8.5 text-white",
+                        "type" = "submit",
+                        class =
+                            "flex-1 bg-zinc-700 hover:opacity-80 px-3 rounded-md h-8.5 text-white",
                         "Apply"
                     ),
                     button!(
-                        class="flex-1 hover:opacity-80 px-3 border border-zinc-400 rounded-md h-8.5",
+                        class =
+                            "flex-1 hover:opacity-80 px-3 border border-zinc-400 rounded-md h-8.5",
                         "Reset Filters"
                     )
                 )
@@ -161,11 +172,15 @@ pub fn render_filter_full() -> impl IntoHtml {
 
 pub fn render_property_type(highlight: &str) -> impl IntoHtml {
     div!(
+        id="ff_property_type",
         class = "gap-4 grid grid-cols-2",
         PROPERTY_TYPE.map(|property| {
             if highlight == property.title {
-                div!(
-                    class = "flex flex-col items-center justify-center p-4 rounded-md cursor-pointer border border-zinc-950",
+                button!(
+                    "hx-get" = format!("/realestate/ui/search/property_type/{}", property.title),
+                    disabled = "true",
+                    id = "selected_property",
+                    class = "flex flex-col items-center justify-center p-4 rounded-md border border-zinc-950",
                     img!(
                         class = "mb-2 w-6 h-6",
                         src = property.img,
@@ -174,8 +189,13 @@ pub fn render_property_type(highlight: &str) -> impl IntoHtml {
                     span!(property.title)
                 )
             } else {
-                div!(
-                    class = "flex flex-col items-center justify-center p-4 rounded-md cursor-pointer border border-zinc-300",
+                button!(
+                    "hx-get" = format!("/realestate/ui/search/property_type/{}", property.title),
+                    "hx-target" = "#ff_property_type",
+                    "hx-swap" = "outerHTML",
+                    "hx-push-url"="false",
+                    "type" = "button",
+                    class = "flex flex-col items-center justify-center p-4 rounded-md border border-zinc-300",
                     img!(
                         class = "mb-2 w-6 h-6",
                         src = property.img,
@@ -190,26 +210,27 @@ pub fn render_property_type(highlight: &str) -> impl IntoHtml {
 
 pub fn render_ameniy(highlight: &str) -> impl IntoHtml {
     div!(
+        id = "ff_amenity",
         class = "flex flex-wrap gap-2",
-        AMENITY.map(|amenity| { 
+        AMENITY.map(|amenity| {
             if highlight == amenity.title {
-                div!(
-                    class = "flex items-center space-x-2 p-2 border border-zinc-950 rounded-lg hover:cursor-pointer",
-                    img!(
-                        class = "w-5 h-5",
-                        src = amenity.img,
-                        alt = amenity.alt
-                    ),
+                button!(
+                    "hx-get" = format!("/realestate/ui/search/amenity/{}", amenity.title),
+                    disabled = "true",
+                    id = "selected_amenity",
+                    class = "flex items-center space-x-2 p-2 border border-zinc-950 rounded-lg",
+                    img!(class = "w-5 h-5", src = amenity.img, alt = amenity.alt),
                     span!(amenity.title)
                 )
             } else {
-                div!(
-                    class = "flex items-center space-x-2 p-2 border border-zinc-300 rounded-lg hover:cursor-pointer",
-                    img!(
-                        class = "w-5 h-5",
-                        src = amenity.img,
-                        alt = amenity.alt
-                    ),
+                button!(
+                    "hx-get" = format!("/realestate/ui/search/amenity/{}", amenity.title),
+                    "hx-target" = "#ff_amenity",
+                    "hx-swap" = "outerHTML",
+                    "hx-push-url" = "false",
+                    "type" = "button",
+                    class = "flex items-center space-x-2 p-2 border border-zinc-300 rounded-lg",
+                    img!(class = "w-5 h-5", src = amenity.img, alt = amenity.alt),
                     span!(amenity.title)
                 )
             }

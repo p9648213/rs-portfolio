@@ -3,11 +3,15 @@ use vy::prelude::*;
 pub fn render_filter_bar() -> impl IntoHtml {
     div!(
         class = "flex justify-between items-center py-5 w-full",
-        div!(
+        form!(
+            "hx-get" = "/realestate/search",
+            "hx-swap" = "none",
+            "hx-trigger" = "submit,change",
+            "hx-push-url" = "true",
             class = "flex justify-between items-center gap-4 p-2",
             // All Filters
             button!(
-                class = "flex items-center gap-2 px-2 h-8.5 border border-zinc-400 rounded-md hover:opacity-80",
+                class = "w-23 flex items-center gap-2 px-2 h-8.5 border border-zinc-400 rounded-md hover:opacity-80",
                 img!(
                     class = "w-4 h-4",
                     src = "/assets/images/real-estate/funnel.svg",
@@ -20,11 +24,12 @@ pub fn render_filter_bar() -> impl IntoHtml {
                 class = "flex items-center",
                 input!(
                     class = "border-zinc-400 rounded-r-none rounded-l-md w-40 h-8.5 px-2",
+                    name = "location",
                     placeholder = "Search Location"
                 ),
                 button!(
-                    class =
-                        "border border-zinc-400 border-l-0 rounded-r-md rounded-l-none h-8.5 px-2",
+                    "type" = "button",
+                    class = "w-8 border border-zinc-400 border-l-0 rounded-r-md rounded-l-none h-8.5 px-2",
                     img!(
                         class = "w-4 h-4",
                         src = "/assets/images/real-estate/search.svg",
@@ -41,7 +46,7 @@ pub fn render_filter_bar() -> impl IntoHtml {
                     class = "border-zinc-400 rounded-md h-8.5 py-0",
                     option!(value = "", selected = "true", hidden = "true", "Min Price"),
                     option!(value = "", "Any"),
-                    option!(value = "500", "500"),
+                    option!(value = "500", "500$"),
                     option!(value = "1000", "1000$"),
                     option!(value = "1500", "1500$"),
                     option!(value = "2000", "2000$"),
