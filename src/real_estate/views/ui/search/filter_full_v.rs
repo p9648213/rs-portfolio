@@ -1,8 +1,11 @@
 use vy::prelude::*;
 
-use crate::real_estate::constant::{AMENITY, PROPERTY_TYPE};
+use crate::real_estate::{
+    constant::{AMENITY, PROPERTY_TYPE},
+    controllers::search_c::SearchQuery,
+};
 
-pub fn render_filter_full() -> impl IntoHtml {
+pub fn render_filter_full(search_query: &SearchQuery) -> impl IntoHtml {
     (
         PreEscaped(
             r#"

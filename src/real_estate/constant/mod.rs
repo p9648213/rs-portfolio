@@ -188,3 +188,9 @@ pub const AMENITY: [FilterItem; 13] = [
         alt: "wifi",
     },
 ];
+
+pub const MIN_PRICE: [&str; 9] = [
+    "none", "", "500", "1000", "1500", "2000", "3000", "5000", "10000",
+];
+
+pub const MAX_PRICE: [&str; 7] = ["none", "", "1000", "2000", "3000", "5000", "10000"];

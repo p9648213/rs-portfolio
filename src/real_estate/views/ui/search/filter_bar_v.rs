@@ -1,6 +1,15 @@
 use vy::prelude::*;
 
-pub fn render_filter_bar() -> impl IntoHtml {
+use crate::real_estate::{
+    constant::{MAX_PRICE, MIN_PRICE},
+    controllers::search_c::SearchQuery,
+};
+
+pub fn render_filter_bar(search_query: &SearchQuery) -> impl IntoHtml {
+    let location: &str = search_query.location.as_deref().unwrap_or("");
+    let min_price = search_query.min_price.as_deref().unwrap_or("none");
+    let max_price = search_query.max_price.as_deref().unwrap_or("none");
+
     div!(
         class = "flex justify-between items-center py-5 w-full",
         form!(
@@ -25,7 +34,7 @@ pub fn render_filter_bar() -> impl IntoHtml {
                 input!(
                     class = "border-zinc-400 rounded-r-none rounded-l-md w-40 h-8.5 px-2",
                     name = "location",
-                    placeholder = "Search Location"
+                    placeholder = "Search Location",
                 ),
                 button!(
                     "type" = "button",
@@ -41,32 +50,9 @@ pub fn render_filter_bar() -> impl IntoHtml {
             div!(
                 class = "flex gap-1",
                 // Minimum Price Selector
-                select!(
-                    name = "min_price",
-                    class = "border-zinc-400 rounded-md h-8.5 py-0",
-                    option!(value = "", selected = "true", hidden = "true", "Min Price"),
-                    option!(value = "", "Any"),
-                    option!(value = "500", "500$"),
-                    option!(value = "1000", "1000$"),
-                    option!(value = "1500", "1500$"),
-                    option!(value = "2000", "2000$"),
-                    option!(value = "3000", "3000$"),
-                    option!(value = "5000", "5000$"),
-                    option!(value = "10000", "10000$")
-                ),
+                render_min_price(min_price),
                 // Maximum Price Selector
-                select!(
-                    name = "max_price",
-                    class = "border-zinc-400 rounded-md h-8.5 py-0",
-                    option!(value = "", selected = "true", hidden = "true", "Max Price"),
-                    option!(value = "", "Any"),
-                    option!(value = "1000", "1000$"),
-                    option!(value = "2000", "2000$"),
-                    option!(value = "3000", "3000$"),
-                    option!(value = "5000", "5000$"),
-                    option!(value = "10000", "10000$")
-                ),
-                // Beds and Baths
+                render_max_price(max_price), // Beds and Baths
                 div!(
                     class = "flex gap-1",
                     // Beds
@@ -134,5 +120,69 @@ pub fn render_filter_bar() -> impl IntoHtml {
                 )
             )
         )
+    )
+}
+
+pub fn render_min_price(value: &str) -> impl IntoHtml {
+    select!(
+        name = "min_price",
+        class = "border-zinc-400 rounded-md h-8.5 py-0",
+        MIN_PRICE.map(|price| {
+            let selected = if price == value { Some(()) } else { None };
+
+            if price == "none" {
+                option!(
+                    value = price,
+                    selected? = selected,
+                    hidden = true,
+                    format!("Min Price")
+                )
+            } else {
+                option!(
+                    value = price,
+                    selected? = selected,
+                    format!(
+                        "{}",
+                        if price.is_empty() {
+                            "Any".to_owned()
+                        } else {
+                            format!("{}$", price)
+                        }
+                    )
+                )
+            }
+        }),
+    )
+}
+
+pub fn render_max_price(value: &str) -> impl IntoHtml {
+    select!(
+        name = "max_price",
+        class = "border-zinc-400 rounded-md h-8.5 py-0",
+        MAX_PRICE.map(|price| {
+            let selected = if price == value { Some(()) } else { None };
+
+            if price == "none" {
+                option!(
+                    value = price,
+                    selected? = selected,
+                    hidden = true,
+                    format!("Max Price")
+                )
+            } else {
+                option!(
+                    value = price,
+                    selected? = selected,
+                    format!(
+                        "{}",
+                        if price.is_empty() {
+                            "Any".to_owned()
+                        } else {
+                            format!("{}$", price)
+                        }
+                    )
+                )
+            }
+        }),
     )
 }
