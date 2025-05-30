@@ -47,7 +47,8 @@ pub fn render_search_section(search_query: &SearchQuery) -> impl IntoHtml {
         div!(
             class = "flex flex-1 justify-between gap-3 mb-5 overflow-hidden",
             div!(
-                class = "visible opacity-100 w-94 min-w-94 h-full overflow-auto",
+                id = "filter-full",
+                class = "hidden w-94 min-w-94 h-full overflow-auto",
                 render_filter_full(search_query)
             ),
             div!("Map"),

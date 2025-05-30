@@ -88,7 +88,7 @@ pub const TENANT_NAV: [UserNavItem; 4] = [
     },
 ];
 
-pub const PROPERTY_TYPE: [FilterItem; 6] = [
+pub const PROPERTY_TYPE_FF: [FilterItem; 6] = [
     FilterItem {
         title: "Rooms",
         img: "/assets/images/real-estate/house.svg",
@@ -194,3 +194,18 @@ pub const MIN_PRICE: [&str; 9] = [
 ];
 
 pub const MAX_PRICE: [&str; 7] = ["none", "", "1000", "2000", "3000", "5000", "10000"];
+
+pub const BEDS: [&str; 6] = ["none", "", "1", "2", "3", "4"];
+
+pub const BATCHS: [&str; 5] = ["none", "", "1", "2", "3"];
+
+pub const PROPERTY_TYPE: [&str; 8] = [
+    "none",
+    "",
+    "Rooms",
+    "Tinyhouse",
+    "Apartment",
+    "Villa",
+    "Townhouse",
+    "Cottage",
+];

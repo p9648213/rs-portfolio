@@ -1,6 +1,7 @@
 use axum::{
     Extension,
     extract::{Path, Query},
+    http::HeaderMap,
     response::Html,
 };
 use serde::Deserialize;
@@ -9,7 +10,7 @@ use vy::IntoHtml;
 use crate::{
     common::middlewares::auth_mw::UserAuth,
     real_estate::views::{
-        pages::search_v::{SearchPageProps, render_search_page},
+        pages::search_v::{SearchPageProps, render_search_page, render_search_section},
         ui::search::filter_full_v::{render_ameniy, render_property_type},
     },
 };
@@ -29,14 +30,27 @@ pub struct SearchQuery {
 }
 
 pub async fn get_search_page(
+    headers: HeaderMap,
     Extension(user_auth): Extension<UserAuth>,
     Query(search_query): Query<SearchQuery>,
 ) -> Html<String> {
+    let hx_current_url = headers.get("HX-Current-URL");
+
     let props = SearchPageProps {
         user_info: user_auth.0,
         is_dashboard_page: false,
         search_query: &search_query,
     };
+
+    if let Some(url) = hx_current_url {
+        if url
+            .to_str()
+            .unwrap_or_default()
+            .contains("/realestate/search")
+        {
+            return Html(render_search_section(&search_query).into_string());
+        }
+    }
 
     Html(render_search_page(&props).into_string())
 }

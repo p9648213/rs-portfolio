@@ -38,7 +38,7 @@ function getFilterFullPropertyType() {
   const selected_property = document.getElementById("selected_property");
 
   return selected_property
-    ? selected_property.querySelector("span").textContent.toLowerCase()
+    ? selected_property.querySelector("span").textContent
     : "";
 }
 
@@ -46,8 +46,17 @@ function getFilterFullAmenity() {
   const selected_amenity = document.getElementById("selected_amenity");
 
   return selected_amenity
-    ? selected_amenity.querySelector("span").textContent.toLowerCase()
+    ? selected_amenity.querySelector("span").textContent
     : "";
+}
+
+export function toggleFilterFull() {
+  const all_filter_btn = document.getElementById("all-filter-btn");
+  const filter_full = document.getElementById("filter-full");
+
+  all_filter_btn.addEventListener("click", () => {
+    filter_full.classList.toggle("hidden");
+  })
 }
 
 window.getFilterFullPropertyType = getFilterFullPropertyType;

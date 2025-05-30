@@ -1,7 +1,7 @@
 use vy::prelude::*;
 
 use crate::real_estate::{
-    constant::{MAX_PRICE, MIN_PRICE},
+    constant::{BEDS, MAX_PRICE, MIN_PRICE, PROPERTY_TYPE},
     controllers::search_c::SearchQuery,
 };
 
@@ -9,117 +9,102 @@ pub fn render_filter_bar(search_query: &SearchQuery) -> impl IntoHtml {
     let location: &str = search_query.location.as_deref().unwrap_or("");
     let min_price = search_query.min_price.as_deref().unwrap_or("none");
     let max_price = search_query.max_price.as_deref().unwrap_or("none");
+    let beds = search_query.beds.as_deref().unwrap_or("none");
+    let baths = search_query.baths.as_deref().unwrap_or("none");
+    let property_type = search_query.property_type.as_deref().unwrap_or("none");
 
-    div!(
-        class = "flex justify-between items-center py-5 w-full",
-        form!(
-            "hx-get" = "/realestate/search",
-            "hx-swap" = "none",
-            "hx-trigger" = "submit,change",
-            "hx-push-url" = "true",
-            class = "flex justify-between items-center gap-4 p-2",
-            // All Filters
-            button!(
-                class = "w-23 flex items-center gap-2 px-2 h-8.5 border border-zinc-400 rounded-md hover:opacity-80",
-                img!(
-                    class = "w-4 h-4",
-                    src = "/assets/images/real-estate/funnel.svg",
-                    alt = "all-filter"
-                ),
-                span!("All Filter")
-            ),
-            // Search Location
-            div!(
-                class = "flex items-center",
-                input!(
-                    class = "border-zinc-400 rounded-r-none rounded-l-md w-40 h-8.5 px-2",
-                    name = "location",
-                    placeholder = "Search Location",
-                ),
+    (
+        PreEscaped(
+            r#"
+                <script defer type="module">
+                    import { setupPriceRange, setupSquareFeet, toggleFilterFull } from "/assets/js/realestate/search/search.js";
+                    setupPriceRange();
+                    setupSquareFeet();
+                    toggleFilterFull();
+                </script>
+            "#,
+        ),
+        div!(
+            class = "flex justify-between items-center py-5 w-full",
+            form!(
+                "hx-get" = "/realestate/search",
+                "hx-target" = "main",
+                "hx-trigger" = "submit,change",
+                "hx-push-url" = "true",
+                class = "flex justify-between items-center gap-4 p-2",
+                // All Filters
                 button!(
+                    id = "all-filter-btn",
                     "type" = "button",
-                    class = "w-8 border border-zinc-400 border-l-0 rounded-r-md rounded-l-none h-8.5 px-2",
+                    class = "w-23 flex items-center gap-2 px-2 h-8.5 border border-zinc-400 rounded-md hover:opacity-80",
                     img!(
                         class = "w-4 h-4",
-                        src = "/assets/images/real-estate/search.svg",
-                        alt = "search-location"
+                        src = "/assets/images/real-estate/funnel.svg",
+                        alt = "all-filter"
                     ),
-                )
-            ),
-            // Price Range
-            div!(
-                class = "flex gap-1",
-                // Minimum Price Selector
-                render_min_price(min_price),
-                // Maximum Price Selector
-                render_max_price(max_price), // Beds and Baths
+                    span!("All Filter")
+                ),
+                // Search Location
+                div!(
+                    class = "flex items-center",
+                    input!(
+                        class = "border-zinc-400 rounded-r-none rounded-l-md w-40 h-8.5 px-2",
+                        name = "location",
+                        placeholder = "Search Location",
+                        value = location
+                    ),
+                    button!(
+                        "type" = "button",
+                        class = "w-8 border border-zinc-400 border-l-0 rounded-r-md rounded-l-none h-8.5 px-2",
+                        img!(
+                            class = "w-4 h-4",
+                            src = "/assets/images/real-estate/search.svg",
+                            alt = "search-location"
+                        ),
+                    )
+                ),
+                // Price Range
                 div!(
                     class = "flex gap-1",
-                    // Beds
-                    select!(
-                        name = "beds",
-                        class = "border-zinc-400 rounded-md h-8.5 py-0",
-                        option!(value = "", selected = "true", hidden = "true", "Beds"),
-                        option!(value = "", "Any beds"),
-                        option!(value = "1", "1+ beds"),
-                        option!(value = "2", "2+ beds"),
-                        option!(value = "3", "3+ beds"),
-                        option!(value = "4", "4+ beds"),
+                    // Minimum Price Selector
+                    render_min_price(min_price),
+                    // Maximum Price Selector
+                    render_max_price(max_price), // Beds and Baths
+                    div!(
+                        class = "flex gap-1",
+                        // Beds
+                        render_beds(beds),
+                        // Baths
+                        render_baths(baths),
                     ),
-                    // Baths
-                    select!(
-                        name = "baths",
-                        class = "border-zinc-400 rounded-md h-8.5 py-0",
-                        option!(value = "", selected = "true", hidden = "true", "Baths"),
-                        option!(value = "", "Any baths"),
-                        option!(value = "1", "1+ baths"),
-                        option!(value = "2", "2+ baths"),
-                        option!(value = "3", "3+ baths"),
-                    ),
-                ),
-                // Property Type
-                select!(
-                    name = "property_type",
-                    class = "border-zinc-400 rounded-md h-8.5 py-0",
-                    option!(
-                        value = "",
-                        selected = "true",
-                        hidden = "true",
-                        "Property Type"
-                    ),
-                    option!(value = "", "Any Property Type"),
-                    option!(value = "rooms", "Rooms"),
-                    option!(value = "tinyhouse", "Tinyhouse"),
-                    option!(value = "apartment", "Apartment"),
-                    option!(value = "villa", "Villa"),
-                    option!(value = "townhouse", "Townhouse"),
-                    option!(value = "cottage", "Cottage"),
-                ),
-            )
-        ),
-        // View Mode
-        div!(
-            class = "flex justify-between items-center gap-4 p-2",
+                    // Property Type
+                    render_property_type(property_type),
+                )
+            ),
+            // View Mode
             div!(
-                class = "flex border border-zinc-400 rounded-md",
-                button!(
-                    class = "rounded-none rounded-l-md h-8.5 py-0 px-2",
-                    img!(
-                        class = "w-5 h-5",
-                        src = "/assets/images/real-estate/list.svg",
-                        alt = "list"
-                    )
-                ),
-                button!(
-                    class = "rounded-none rounded-r-md h-8.5 py-0 px-2 bg-zinc-300",
-                    img!(
-                        class = "w-5 h-5",
-                        src = "/assets/images/real-estate/grid-3x3.svg",
-                        alt = "list"
+                class = "flex justify-between items-center gap-4 p-2",
+                div!(
+                    class = "flex border border-zinc-400 rounded-md",
+                    button!(
+                        class = "rounded-none rounded-l-md h-8.5 py-0 px-2",
+                        img!(
+                            class = "w-5 h-5",
+                            src = "/assets/images/real-estate/list.svg",
+                            alt = "list"
+                        )
+                    ),
+                    button!(
+                        class = "rounded-none rounded-r-md h-8.5 py-0 px-2 bg-zinc-300",
+                        img!(
+                            class = "w-5 h-5",
+                            src = "/assets/images/real-estate/grid-3x3.svg",
+                            alt = "list"
+                        )
                     )
                 )
             )
-        )
+        ),
     )
 }
 
@@ -184,5 +169,105 @@ pub fn render_max_price(value: &str) -> impl IntoHtml {
                 )
             }
         }),
+    )
+}
+
+pub fn render_beds(value: &str) -> impl IntoHtml {
+    select!(
+        name = "beds",
+        class = "border-zinc-400 rounded-md h-8.5 py-0",
+        BEDS.map(|bed| {
+            let selected = if bed == value { Some(()) } else { None };
+
+            if bed == "none" {
+                option!(
+                    value = bed,
+                    selected? = selected,
+                    hidden = true,
+                    format!("Beds")
+                )
+            } else {
+                option!(
+                    value = bed,
+                    selected? = selected,
+                    format!(
+                        "{}",
+                        if bed.is_empty() {
+                            "Any beds".to_owned()
+                        } else {
+                            format!("{}+ beds", bed)
+                        }
+                    )
+                )
+            }
+        }),
+    )
+}
+
+pub fn render_baths(value: &str) -> impl IntoHtml {
+    select!(
+        name = "baths",
+        class = "border-zinc-400 rounded-md h-8.5 py-0",
+        BEDS.map(|bath| {
+            let selected = if bath == value { Some(()) } else { None };
+
+            if bath == "none" {
+                option!(
+                    value = bath,
+                    selected? = selected,
+                    hidden = true,
+                    format!("Baths")
+                )
+            } else {
+                option!(
+                    value = bath,
+                    selected? = selected,
+                    format!(
+                        "{}",
+                        if bath.is_empty() {
+                            "Any baths".to_owned()
+                        } else {
+                            format!("{}+ baths", bath)
+                        }
+                    )
+                )
+            }
+        }),
+    )
+}
+
+pub fn render_property_type(value: &str) -> impl IntoHtml {
+    select!(
+        name = "property_type",
+        class = "border-zinc-400 rounded-md h-8.5 py-0",
+        PROPERTY_TYPE.map(|property_type| {
+            let selected = if property_type == value {
+                Some(())
+            } else {
+                None
+            };
+
+            if property_type == "none" {
+                option!(
+                    value = property_type,
+                    selected? = selected,
+                    hidden = true,
+                    format!("Property Type")
+                )
+            } else {
+                option!(
+                    value = property_type,
+                    selected? = selected,
+                    format!(
+                        "{}",
+                        if property_type.is_empty() {
+                            "Any property type"
+                        } else {
+                            property_type
+                        }
+                    )
+                )
+            }
+        })
     )
 }

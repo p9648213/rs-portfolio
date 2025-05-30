@@ -9,7 +9,7 @@ axum = { version = "0.8.3", features = ["macros"] }
 axum-extra = { version = "0.10.1", features = ["cookie"] }
 axum_session = { version = "0.16.0" }
 axum_session_redispool = { version = "0.6.0" }
-clap = { version = "4.5.38", features = ["derive", "env"] }
+clap = { version = "4.5.39", features = ["derive", "env"] }
 cookie = "0.18.1"
 deadpool-postgres = "0.14.1"
 dotenvy = "0.15.7"
@@ -17,7 +17,7 @@ oauth2 = "5.0.0"
 postgres-types = { version = "0.2.9", features = ["derive"] }
 redis = { version = "0.29.5" }
 redis_pool = "0.8.0"
-reqwest = { version = "0.12.15", features = ["json"] }
+reqwest = { version = "0.12.18", features = ["json"] }
 serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.45.1", features = ["macros", "rt-multi-thread"] }
 tokio-postgres = "0.7.13"
